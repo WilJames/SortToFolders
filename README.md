@@ -3,6 +3,5 @@
 
 OS: Windows/Linux
 
-Для Windows - скачать архив с релизом, распаковать куда нравится, запустить файл MoveToFolders.exe
-
-Для Linux - скачать архив с иходником, распаковать куда нравится, установить Python, установить библиотеку transliterate. Запускать файл MoveToFolders.py
+- Для Windows - скачать архив с релизом, распаковать куда нравится, запустить файл MoveToFolders.exe
+- Для Linux - скачать архив с иходником, распаковать куда нравится, установить [Python](https://www.python.org/downloads/ "Python"), установить библиотеку [transliterate](https://pypi.org/project/transliterate/ "transliterate"). Запускать файл MoveToFolders.py
