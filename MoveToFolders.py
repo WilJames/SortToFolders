@@ -1,5 +1,4 @@
 from PyQt5 import QtWidgets, QtCore
-from transliterate import translit, get_available_language_codes
 from PyQt5.QtGui import QColor, QPalette
 import sys
 import sort
@@ -9,62 +8,7 @@ import pickle
 
 win_size = 0
 path = ''
-
-with open('settings/path.ini', 'rb') as f:
-    path = pickle.load(f)
-
-with open('settings/dict_all_paths.ini', 'rb') as f:
-    dict_all_paths = pickle.load(f)
-with open('settings/dict_folders.ini', 'rb') as f:
-    dict_folders = pickle.load(f)
-with open('settings/dict_extensions.ini', 'rb') as f:
-    dict_extensions = pickle.load(f)
-
-# dict_all_paths = {
-#     'archves': 'C:/dev',
-#     'video': 'C:/dev',
-#     'documents': 'C:/dev',
-#     'images': 'C:/dev',
-#     'music': 'C:/dev',
-#     'programs': 'C:/dev',
-#     'obrazu': 'C:/dev',
-#     'psd': 'C:/dev',
-#     'fonts': 'C:/dev',
-#     'torrent': 'C:/dev'
-# }
-
-# dict_folders = {
-#     'archves': 'Архивы',
-#     'video': 'Видео',
-#     'documents': 'Документы',
-#     'images': 'Изображения',
-#     'music': 'Музыка',
-#     'programs': 'Программы',
-#     'obrazu': 'Образы',
-#     'psd': 'CG редакторы',
-#     'fonts': 'Шрифты',
-#     'torrent': 'Торренты'
-# }
-
-# dict_extensions = {
-#     'archves': ['.zip', '.rar', '.arj', '.gz', '.sit', '.sitx', '.sea', '.ace', '.bz2', '.7z', '.jar', '.cab'],
-#     'video': ['.avi', '.mpg', '.mpe', '.mpeg', '.asf', '.wmv', '.mov', '.qt', '.rm', '.mp4', '.flv', '.m4v', '.webm', '.ogv', '.ogg', '.mkv', '.3gp', '.3gpp', '.bik', '.flv'],
-#     'documents': ['.doc', '.pdf', '.ppt', '.pps', '.docx', '.pptx', '.txt'],
-#     'images': ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.jpe', '.jfif', '.tigg'],
-#     'music': ['.mp3', '.wav', '.wma', '.mpa', '.ram', '.ra', '.aac', '.aif', '.m4a'],
-#     'programs': ['.exe', '.msi'],
-#     'obrazu': ['.iso', '.mdf', '.mds'],
-#     'psd': ['.psd'],
-#     'fonts': ['.ttf'],
-#     'torrent': ['.torrent']
-# }
-
-
-# class mySet(QtWidgets.QWidget, sort2.Ui_settings):
-#     def __init__(self):
-#         super().__init__()
-#         self.setFixedSize(371, 340)
-#         self.setupUi(self)
+dict_all = {}
 
 
 class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
@@ -73,14 +17,12 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
         self.setFixedSize(290, 410)
         self.setupUi(self)
 
+        self.loading()
+
         self.pushButton_path.clicked.connect(self.browse_folder)
         self.pushButton_choosedirfolders.clicked.connect(self.qwerty)
 
         self.lineEdit_path.setText(path)
-        self.info()
-
-        for value in dict_folders.values():
-            self.listWidget_categori.addItem(value)
 
         self.pushButton_add_extensions.clicked.connect(self.adds)
         self.pushButton_remove_extensions.clicked.connect(self.remove)
@@ -95,6 +37,113 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
         # self.lineEdit_extensions.editingFinished.connect(self.adds_string)
         self.lineEdit_extensions.returnPressed.connect(self.adds_string)
 
+        # self.comboBox_lang.setCurrentIndex(current_lang)
+        self.comboBox_lang.activated.connect(self.lang)
+        self.comboBox_lang.setCurrentIndex(current_lang)
+        if self.label_2.text() == '':
+            self.lang()
+
+    def loading(self):
+        files = os.listdir(f'{os.path.abspath(os.curdir)}/settings')
+        if not 'dict_all.ini' in files:  # проверка на существование файла в папке
+            with open('settings/dict_all.ini', 'wb') as f:
+                global dict_all
+                dict_all.clear()
+                pickle.dump(dict_all, f)
+
+        if not 'path.ini' in files:  # проверка на существование файла в папке
+            with open('settings/path.ini', 'wb') as f:
+                global path
+                pickle.dump(path, f)
+
+        try:
+            with open('settings/dict_all.ini', 'rb') as f:
+                dict_all = pickle.load(f)
+
+            with open('settings/path.ini', 'rb') as f:
+                path = pickle.load(f)
+
+            with open('settings/lang.ini', 'rb') as f:
+                global lang
+                lang = pickle.load(f)
+
+            with open('settings/current_lang.ini', 'rb') as f:
+                global current_lang
+                current_lang = pickle.load(f)
+
+            for value in dict_all.keys():
+                self.listWidget_categori.addItem(value)
+
+            for key in lang.keys():
+                self.comboBox_lang.addItem(key)
+        except:
+            pass
+
+    def lang(self):
+        index = self.comboBox_lang.currentIndex()
+        # if index != current_lang:
+        for i, (k, v) in enumerate(lang.items()):
+            if i == index:
+                for k2, v2 in v.items():
+                    if k2 == 'put':
+                        self.pushButton_path.setText(v2)
+                        self.pushButton_choosedirfolders.setText(v2)
+                    elif k2 == 'trash':
+                        self.label_2.setText(v2)
+                    elif k2 == 'cur_folder':
+                        self.label_3.setText(v2)
+                    elif k2 == 'category':
+                        self.label_5.setText(v2)
+                    elif k2 == 'rashirenia':
+                        self.label_4.setText(v2)
+                    elif k2 == 'label_enter':
+                        self.label_8.setText(v2)
+                    elif k2 == 'label_categoria':
+                        self.label_7.setText(v2)
+                    elif k2 == 'label_lang':
+                        self.label_lang.setText(v2)
+                    elif k2 == 'label_rashiren':
+                        self.label_6.setText(v2)
+                    elif k2 == 'start':
+                        self.pushButton_start.setText(v2)
+                    elif k2 == 'info':
+                        global lang_info
+                        lang_info = v2
+                        if win_size == 0:
+                            self.pushButton_settings.setText(f'{v2} >')
+                        elif win_size == 1:
+                            self.pushButton_settings.setText(f'{v2} <')
+                    elif k2 == 'status1':
+                        global status1
+                        status1 = v2
+                    elif k2 == 'status2':
+                        global status2
+                        status2 = v2
+                    elif k2 == 'status3':
+                        global status3
+                        status3 = v2
+                    elif k2 == 'status4':
+                        global status4
+                        status4 = v2
+                    elif k2 == 'status5':
+                        global status5
+                        status5 = v2
+                    elif k2 == 'choose_folder':
+                        global choose_folder
+                        choose_folder = v2
+                    elif k2 == 'status6':
+                        global status6
+                        status6 = v2
+                    elif k2 == 'status7':
+                        global status7
+                        status7 = v2
+                global current_lang
+                current_lang = index
+                self.w_lang()
+
+                if win_size == 1:
+                    self.info()
+
     def adds_string(self):
         a = self.lineEdit_extensions.text()
         if a.startswith('.'):
@@ -102,221 +151,190 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
         else:
             self.addfolders()
 
+# замена слешей для винды в строке пути главной папки
     def replace_path(self):
         global path
         if path != self.lineEdit_path.text():
             a = self.lineEdit_path.text()
-            b = a.replace("\\", "/")
+            aa = os.path.normpath(a)
+            b = aa.replace("\\", "/")
             self.lineEdit_path.setText(b)
             path = b
             self.w_path()
 
+# замена слешей для винды в строке пути подпапок
     def replace_folders(self):
         index_categori = self.listWidget_categori.currentRow()
         a = self.lineEdit_pathfolders.text()
-        for index_p, (key_p, value_p) in enumerate(dict_all_paths.items()):
-            if index_categori == index_p:
-                if a != value_p:
-                    b = a.replace("\\", "/")
-                    self.lineEdit_pathfolders.setText(b)
-                    dict_all_paths.update({key_p: b})
-                    self.w_dict_all_paths()
+        for i, (k, v) in enumerate(dict_all.items()):
+            if i == index_categori:
+                for p, v2 in v.items():
+                    if p == 'put' and a != v2:
+                        aa = os.path.normpath(a)
+                        b = aa.replace("\\", "/")
+                        self.lineEdit_pathfolders.setText(b)
+                        v.update({p: b})
+                        self.write_all()
 
     def settings_win(self):
-        # self.statusBar.showMessage('Message in statusbar.', 2000)
+        # self.info()
         global win_size
         if win_size == 0:
             self.setFixedSize(590, 410)
-            self.pushButton_settings.setText('Инструкция <')
+            self.pushButton_settings.setText(f'{lang_info} <')
             win_size = 1
+            self.info()
         elif win_size == 1:
             self.setFixedSize(290, 410)
-            self.pushButton_settings.setText('Инструкция >')
+            self.pushButton_settings.setText(f'{lang_info} >')
             win_size = 0
 
+    def ww_lang(self):
+        with open('settings/lang.ini', 'wb') as f:
+            pickle.dump(lang, f)
+
+    def w_lang(self):
+        with open('settings/current_lang.ini', 'wb') as f:
+            pickle.dump(current_lang, f)
+
     def w_path(self):
-        files = os.listdir(f'{os.path.abspath(os.curdir)}/settings')
-        if 'path.ini' in files:  # проверка на существование файла в папке
-            with open('settings/path.ini', 'wb') as f:
-                pickle.dump(path, f)
-        else:
-            create_file = open('settings/path.ini', 'w')  # создание файла
-            create_file.close()
-            with open('settings/path.ini', 'wb') as f:
-                pickle.dump(path, f)
+        with open('settings/path.ini', 'wb') as f:
+            pickle.dump(path, f)
 
-    def w_dict_folders(self):
-        files = os.listdir(f'{os.path.abspath(os.curdir)}/settings')
-        if 'dict_folders.ini' in files:  # проверка на существование файла в папке
-            with open('settings/dict_folders.ini', 'wb') as f:
-                pickle.dump(dict_folders, f)
-        else:
-            create_file = open('settings/dict_folders.ini',
-                               'w')  # создание файла
-            create_file.close()
-            with open('settings/dict_folders.ini', 'wb') as f:
-                pickle.dump(dict_folders, f)
-
-    def w_dict_extensions(self):
-        files = os.listdir(f'{os.path.abspath(os.curdir)}/settings')
-        if 'dict_extensions.ini' in files:  # проверка на существование файла в папке
-            with open('settings/dict_extensions.ini', 'wb') as f:
-                pickle.dump(dict_extensions, f)
-        else:
-            create_file = open('settings/dict_extensions.ini',
-                               'w')  # создание файла
-            create_file.close()
-            with open('settings/dict_extensions.ini', 'wb') as f:
-                pickle.dump(dict_extensions, f)
-
-    def w_dict_all_paths(self):
-        files = os.listdir(f'{os.path.abspath(os.curdir)}/settings')
-        if 'dict_all_paths.ini' in files:  # проверка на существование файла в папке
-            with open('settings/dict_all_paths.ini', 'wb') as f:
-                pickle.dump(dict_all_paths, f)
-        else:
-            create_file = open('settings/dict_all_paths.ini',
-                               'w')  # создание файла
-            create_file.close()
-            with open('settings/dict_all_paths.ini', 'wb') as f:
-                pickle.dump(dict_all_paths, f)
+    def write_all(self):
+        with open('settings/dict_all.ini', 'wb') as f:
+            pickle.dump(dict_all, f)
 
     def info(self):
-        with open('settings/readme.ini', 'r') as f:
-            a = f.read()
-            self.textBrowser.setText(a)
-            f.close()
+        if current_lang == 0:
+            with open('settings/readme_ru.ini', 'r') as f:
+                a = f.read()
+                self.textBrowser.setText(a)
+                f.close()
+        elif current_lang == 1:
+            with open('settings/readme_en.ini', 'r') as f:
+                a = f.read()
+                self.textBrowser.setText(a)
+                f.close()
 
     def currCat(self):
         index_categori = self.listWidget_categori.currentRow()
         self.listWidget_extensions.clear()
         self.lineEdit_pathfolders.clear()
 
-        for index, (key, value) in enumerate(dict_extensions.items()):
-            for index_p, (key_p, value_p) in enumerate(dict_all_paths.items()):
-                if index_categori == index == index_p:
-                    self.lineEdit_pathfolders.setText(value_p)
-                    for k in value:
-                        self.listWidget_extensions.addItem(k)
+        for i, (k, v) in enumerate(dict_all.items()):
+            if i == index_categori:
+                for key, value in v.items():
+                    if key == 'rash':
+                        for i2 in value:
+                            self.listWidget_extensions.addItem(i2)
+                    else:
+                        self.lineEdit_pathfolders.setText(value)
         self.listWidget_extensions.sortItems()
 
     def addfolders(self):
         a = self.lineEdit_extensions.text()
         if a == '':
-            self.statusBar.showMessage('Введите название категории для добавления!', 3500)
+            self.statusBar.showMessage(status1, 3500)
         else:
             text_line = self.lineEdit_extensions.text()
             self.listWidget_categori.addItem(text_line)
-            text_line_translit = translit(text_line, 'ru', reversed=True)
-            dict_folders.update({text_line_translit: text_line})
-            dict_extensions.update({text_line_translit: []})
-            dict_all_paths.update({text_line_translit: ''})
+            dict_all.update({text_line: {'put': '', 'rash': []}})
             self.lineEdit_extensions.clear()
-            self.w_dict_folders()
-            self.w_dict_extensions()
-            self.w_dict_all_paths()
             b = self.listWidget_categori.count()
             self.listWidget_categori.setCurrentRow(b - 1)
-            # self.currCat()
+            self.write_all()
 
     def removefolders(self):
-        currItemNot = self.listWidget_categori.currentItem()
-        if not currItemNot:
-            self.statusBar.showMessage('Не выбрана категория для удаления!', 3000)
+        currItem = self.listWidget_categori.currentItem()
+        if not currItem:
+            self.statusBar.showMessage(status2, 3000)
         else:
-            currItem = self.listWidget_categori.currentItem()
             index_category = self.listWidget_categori.currentRow()
-            for index, (key, value) in enumerate(list(dict_folders.items())):
+            for index, (key, value) in enumerate(list(dict_all.items())):
                 if index_category == index:
-                    del dict_folders[key]
-                    del dict_extensions[key]
-                    del dict_all_paths[key]
-                    # self.comboBox_folders.removeItem(index_category)
+                    del dict_all[key]
                     self.listWidget_categori.takeItem(self.listWidget_categori.row(currItem))
-
-            # self.currCat()
-            self.w_dict_folders()
-            self.w_dict_extensions()
-            self.w_dict_all_paths()
+            self.write_all()
 
     def adds(self):
-        a = self.lineEdit_extensions.text()
+        a = self.lineEdit_extensions.text().lower()
         if a == '':
-            self.statusBar.showMessage('Введите расширение для добавления!', 3000)
+            self.statusBar.showMessage(status3, 3000)
         else:
             index_category = self.listWidget_categori.currentRow()
             # перебор индексов, ключей и русских названий
-            for index, (key, value) in enumerate(dict_folders.items()):
-                if index_category == index:  # проверка индекса категории и русских имен категорий
-                    for index_ras, (key_ras, value_ras) in enumerate(
-                            dict_extensions.items()):
-                        if key_ras == key:
-                            if a.startswith('.'):
-                                b = a.split()
-                                for i in b:
-                                    value_ras.append(i)
-                                    dict_extensions.update({key_ras: value_ras})
-                                    self.listWidget_extensions.addItem(i)
-            self.listWidget_extensions.sortItems()
-            self.lineEdit_extensions.clear()
-            self.w_dict_extensions()
+            for i, (k, v) in enumerate(dict_all.items()):
+                if i == index_category:
+                    for key, value in v.items():
+                        if key == 'rash' and a.startswith('.'):
+                            b = a.split()
+                            for i2 in b:
+                                if i2 in value:
+                                    self.statusBar.showMessage(status4, 3000)
+                                else:
+                                    value.append(i2)
+                                    self.listWidget_extensions.addItem(i2)
+        self.listWidget_extensions.sortItems()
+        self.lineEdit_extensions.clear()
+        self.write_all()
 
     def remove(self):
         currItemNot = self.listWidget_extensions.currentItem()
         if not currItemNot:
-            self.statusBar.showMessage('Не выбрано расширение для удаления!', 3000)
+            self.statusBar.showMessage(status5, 3000)
         else:
             currItem = self.listWidget_extensions.currentItem().text()
             currItem2 = self.listWidget_extensions.currentItem()
 
             index_category = self.listWidget_categori.currentRow()
             # перебор индексов, ключей и русских названий
-            for index, (key, value) in enumerate(dict_folders.items()):
-                if index_category == index:  # проверка индекса категории и русских имен категорий
-                    for index_ras, (key_ras, value_ras) in enumerate(dict_extensions.items()):
-                        if key_ras == key:
-                            value_ras.remove(currItem)
-                            dict_extensions.update({key_ras: value_ras})
+            for i, (k, v) in enumerate(dict_all.items()):
+                if i == index_category:
+                    for key, value in v.items():
+                        if key == 'rash':
+                            value.remove(currItem)
                             self.listWidget_extensions.takeItem(self.listWidget_extensions.row(currItem2))
-            self.w_dict_extensions()
+            self.write_all()
 
     def browse_folder(self):  # выбор дирректории
         global path
-        path = QtWidgets.QFileDialog.getExistingDirectory(
-            self, "Выберите папку")
+        path = QtWidgets.QFileDialog.getExistingDirectory(self, choose_folder, os.path.expanduser('~'))
+        os.path.normpath(path)
         self.lineEdit_path.setText(path)
         self.w_path()
 
     def qwerty(self):
         index_category = self.listWidget_categori.currentRow()
         if index_category == -1:
-            self.statusBar.showMessage('Выберите категорию!', 3000)
+            self.statusBar.showMessage(status6, 3000)
         else:
-            for index, (key, value) in enumerate(dict_all_paths.items()):
-                if index_category == index:
-                    path_choose = QtWidgets.QFileDialog.getExistingDirectory(
-                        self, "Выберите папку")
-                    self.lineEdit_pathfolders.setText(path_choose)
-                    dict_all_paths.update({key: path_choose})
-                    self.w_dict_all_paths()
+            for i, (k, v) in enumerate(dict_all.items()):
+                if index_category == i:
+                    for k2, v2 in v.items():
+                        if k2 == 'put':
+                            path_choose = QtWidgets.QFileDialog.getExistingDirectory(self, choose_folder, os.path.expanduser('~'))
+                            os.path.normpath(path_choose)
+                            self.lineEdit_pathfolders.setText(path_choose)
+                            v.update({k2: path_choose})
+            self.write_all()
 
     def start(self):
         files = os.listdir(path)
-        for index_p, (key_p, value_p) in enumerate(dict_all_paths.items()):
-            for index_r, (key_r,
-                          value_r) in enumerate(dict_extensions.items()):
-                if index_p == index_r and value_p != '':
-                    for rashiren in value_r:
-                        for i in files:
-                            if i.endswith(rashiren):
-                                if i in (os.listdir(value_p)):
-                                    k = f'{i[:-len(rashiren)]}_{rashiren}'
-                                    shutil.move(f'{path}/{i}',
-                                                f'{value_p}/{k}')
-                                else:
-                                    shutil.move(f'{path}/{i}',
-                                                f'{value_p}/{i}')
-        self.statusBar.showMessage('Завершено!', 3000)
+        for ind, (knd, v) in enumerate(dict_all.items()):
+            for pk, pv in v.items():
+                if pk == 'put' and pv != '' and os.path.exists(pv):
+                    for rk, rv in v.items():
+                        if rk == 'rash':
+                            for rashiren in rv:
+                                for i in files:
+                                    if i.endswith(rashiren):
+                                        if i in (os.listdir(pv)):
+                                            new_name = f'{i[:-len(rashiren)]}_{rashiren}'
+                                            shutil.move(f'{path}/{i}', f'{pv}/{new_name}')
+                                        else:
+                                            shutil.move(f'{path}/{i}', f'{pv}/{i}')
+        self.statusBar.showMessage(status7, 3000)
 
 
 def main():
@@ -346,7 +364,7 @@ def main():
 
     app.setStyleSheet(
         "QToolTip { color: #ffffff; background-color: #535353; border: 1px groove #333333; }"
-        "QTextBrowser { background-color: #333333; border: none; }"
+        "QTextBrowser { background-color: #353535; border: none; }"
     )
 
     window = myApp()  # Создаём объект класса myApp
