@@ -8,6 +8,6 @@ OS: Windows/Linux/MacOS
 - Для MacOS??? Нужны тесты.
 
 # Скриншоты
-[![](https://pp.userapi.com/c851536/v851536883/127b4f/kXYu-mltjRc.jpg)](https://pp.userapi.com/c851536/v851536883/127b4f/kXYu-mltjRc.jpg)
+[![](https://pp.userapi.com/c850228/v850228861/157863/eWkX0Bl1AqQ.jpg)](https://pp.userapi.com/c850228/v850228861/157863/eWkX0Bl1AqQ.jpg)
 
-[![](https://pp.userapi.com/c851536/v851536883/127b56/A_SOP9NDbOo.jpg)](https://pp.userapi.com/c851536/v851536883/127b56/A_SOP9NDbOo.jpg)
+[![](https://pp.userapi.com/c850228/v850228861/15786a/bGVm0y-zeAI.jpg)](https://pp.userapi.com/c850228/v850228861/15786a/bGVm0y-zeAI.jpg)
