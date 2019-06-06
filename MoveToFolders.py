@@ -338,7 +338,7 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
     def replace_path(self):
         global path
         a = self.lineEdit_path.text()
-        if path != a:
+        if path != a and a != '':
             if os.path.exists(a):
                 b = a.replace("\\", "/")
                 self.lineEdit_path.setText(b)
@@ -352,7 +352,7 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
     def replace_folders(self):
         keys = self.cc()
         a = self.lineEdit_pathfolders.text()
-        if keys.get('put') != a:
+        if keys.get('put') != a and a != '':
             if os.path.exists(a):
                 b = a.replace("\\", "/")
                 self.lineEdit_pathfolders.setText(b)
