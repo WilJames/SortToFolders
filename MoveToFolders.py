@@ -112,7 +112,8 @@ class MyThread(QtCore.QThread, QtCore.QObject):
         names = []
         for extension in extensions:
             for name in files:
-                if name.endswith(extension):
+                filename, ext = os.path.splitext(name)
+                if ext.lower() == extension:
                     names.append(name)
         return names
 
