@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(591, 411)
+        MainWindow.resize(591, 426)
         font = QtGui.QFont()
         font.setFamily("Tahoma")
         font.setPointSize(8)
@@ -98,7 +98,7 @@ class Ui_MainWindow(object):
         self.listWidget_categori.setGeometry(QtCore.QRect(10, 100, 151, 171))
         self.listWidget_categori.setObjectName("listWidget_categori")
         self.textBrowser = QtWidgets.QTextBrowser(self.centralwidget)
-        self.textBrowser.setGeometry(QtCore.QRect(300, 20, 271, 361))
+        self.textBrowser.setGeometry(QtCore.QRect(300, 20, 271, 381))
         self.textBrowser.setStyleSheet("")
         self.textBrowser.setObjectName("textBrowser")
         self.comboBox_lang = QtWidgets.QComboBox(self.centralwidget)
@@ -108,6 +108,10 @@ class Ui_MainWindow(object):
         self.label_lang.setGeometry(QtCore.QRect(110, 310, 71, 20))
         self.label_lang.setText("")
         self.label_lang.setObjectName("label_lang")
+        self.progressBar = QtWidgets.QProgressBar(self.centralwidget)
+        self.progressBar.setGeometry(QtCore.QRect(10, 390, 271, 16))
+        self.progressBar.setProperty("value", 24)
+        self.progressBar.setObjectName("progressBar")
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusBar = QtWidgets.QStatusBar(MainWindow)
         self.statusBar.setObjectName("statusBar")
