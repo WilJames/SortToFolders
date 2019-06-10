@@ -5,7 +5,7 @@
 OS: Windows/Linux/MacOS
 
 # Инструкция по установке:
-- Windows - скачать архив в ветке [релиз](https://github.com/WilJames/MoveToFolders/releases "Releases"), распаковать в любую папку, запустить файл MoveToFolders.exe
+- Windows - скачать архив в ветке [релиз](https://github.com/WilJames/MoveToFolders/releases "Releases"), распаковать в любую папку, запустить файл "MoveToFolders.exe"
 - Linux - скачать архив с [иходником](https://github.com/WilJames/MoveToFolders/archive/master.zip "Download"), распаковать в любую папку, установить [Python](https://www.python.org/downloads/ "Python"). Запускать файл MoveToFolders.py
 - MacOS??? Нужны тесты
 
