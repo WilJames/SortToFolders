@@ -1,26 +1,18 @@
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QWidget, QMessageBox, QApplication
 from PyQt5.QtGui import QColor, QPalette, QIcon
-# from PyQt5.QtCore import Qt
 from sys import argv
 from shutil import move
-# from pickle import dump, load
 from re import search
 from time import time, sleep
 
-import sort
+import GUI
 import os
 import json
 
-# import re
-# import pickle
-# import shutil
-# import sys
-# import time
 breaking = False
 starting = False
 win_size = 0
-path = ''
 dict_all = {}
 
 
@@ -75,10 +67,12 @@ class MyThread(QtCore.QThread, QtCore.QObject):
                 self.finished.emit(f'{time_text} {minutes} {minutes_text} {seconds} {seconds_text}\n{count}\n{real_size}')
         elif len(list_files) == 0:
             self.info_not_files.emit()
-            # 'здесь будет оповещение о том что нет файлов для перемещения'
         starting = False
 
     def humansize(self, nbytes):
+        '''
+        Перевод байт в кб, мб и т.д.
+        '''
         suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
         i = 0
         while nbytes >= 1024 and i < len(suffixes)-1:
@@ -87,8 +81,10 @@ class MyThread(QtCore.QThread, QtCore.QObject):
         f = ('%.2f' % nbytes).rstrip('0').rstrip('.')
         return '%s %s' % (f, suffixes[i])
 
-    # парсинг файлов в целевой папке
     def parsing_listdir(self):
+        '''
+        Парсинг файлов в целевой папке
+        '''
         files = []
         with os.scandir(path) as it:
             for entry in it:
@@ -96,9 +92,10 @@ class MyThread(QtCore.QThread, QtCore.QObject):
                     files.append(os.fsdecode(entry.name))
         return files
 
-    # пасинг словаря для получения пути и расширений для категории
     def parsing_dict(self, category):
-        # if category != 'Global_path':
+        '''
+        пасинг словаря для получения пути и расширений для категории
+        '''
         dict_cat = dict_all.get(category)
         put = dict_cat.get('put')
         if put != '' and put != path and os.path.exists(put):
@@ -107,8 +104,10 @@ class MyThread(QtCore.QThread, QtCore.QObject):
         else:
             return None, None
 
-# парсинг расширений и соответсвия им файлам
     def parsing_rash(self, extensions, files):
+        '''
+        парсинг расширений и соответсвия им файлам
+        '''
         names = []
         for extension in extensions:
             for name in files:
@@ -117,8 +116,10 @@ class MyThread(QtCore.QThread, QtCore.QObject):
                     names.append(name)
         return names
 
-# переименование файла если такое имя есть в папке для перемещения
     def rename_copy(self, name_file, list_move_to_path):
+        '''
+        переименование файла если такое имя есть в папке для перемещения
+        '''
         while name_file in list_move_to_path or name_file in list_files2:
             filename, extension = os.path.splitext(name_file)
             name_split = search(fr'(\()(\d*)(\){extension})', name_file)
@@ -135,8 +136,10 @@ class MyThread(QtCore.QThread, QtCore.QObject):
             name_file = new_name
         return name_file
 
-# проверка имени файла на добавление в список перемещения
     def check(self, mp, names):
+        '''
+        проверка имени файла на добавление в список перемещения
+        '''
         for name in names:
             list_move_to_path = os.listdir(mp)
             if name in list_move_to_path or name in list_files2:
@@ -149,7 +152,7 @@ class MyThread(QtCore.QThread, QtCore.QObject):
                 list_files.append((a, b))
                 list_files2.append(name)
 
-class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
+class myApp(QtWidgets.QMainWindow, GUI.Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -172,8 +175,11 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
         self.listWidget_categori.setCurrentRow(0)
 
         self.lineEdit_path.editingFinished.connect(self.replace_path)
+        self.lineEdit_path.returnPressed.connect(self.clear_focus_path)
+
         self.lineEdit_pathfolders.editingFinished.connect(self.replace_folders)
-        # self.lineEdit_extensions.editingFinished.connect(self.adds_string)
+        self.lineEdit_pathfolders.returnPressed.connect(self.clear_focus_pathfolders)
+
         self.lineEdit_extensions.returnPressed.connect(self.adds_string)
         self.comboBox_lang.activated.connect(self.lang)
         self.comboBox_lang.setCurrentText(saved_lang)
@@ -196,7 +202,7 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
         self.pushButton_start.setText(stop_text)
 
     def info_not_found_files(self):
-        self.statusBar.showMessage(status8, 3000)
+        self.statusBar.showMessage(st8, 3000)
 
     def edit_category(self):
         a = self.listWidget_categori.currentItem()
@@ -224,7 +230,7 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
         box.setLayoutDirection(0)
         box.setIcon(QMessageBox.NoIcon)
         box.setWindowIcon(QIcon('move_file.ico'))
-        box.setWindowTitle(status7)
+        box.setWindowTitle(st7)
         box.setText(info)
         box.setStandardButtons(QMessageBox.Ok)
         self.pushButton_start.setText(start_text)
@@ -234,23 +240,7 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
 
 
     def closeEvent(self, event):
-        # box = QMessageBox()
-        # box.setIcon(QMessageBox.Question)
-        # box.setWindowIcon(QIcon('move_file.ico'))
-        # box.setWindowTitle('Выход?')
-        # box.setText('Действительно выйти?')
-        # box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        # buttonY = box.button(QMessageBox.Yes)
-        # buttonY.setText('Да')
-        # buttonN = box.button(QMessageBox.No)
-        # buttonN.setText('Нет')
-        # box.exec_()
-
-        # if box.clickedButton() == buttonY:
         self.write_all()
-            # event.accept()
-        # elif box.clickedButton() == buttonN:
-        #     event.ignore()
 
     def progress(self, procent):
         self.progressBar.show()
@@ -281,7 +271,7 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
         saved_lang = d_lang.get('Cur_lang')
 
     def lang(self):
-        global lang_info, status1, status2, status3, status4, status5, status6, status7, status8, choose_folder, minutes_text, seconds_text, files_count, time_text, size_text, stop_text, start_text, message_stop, status9, status10
+        global lang_info, st1, st2, st3, st4, st5, st6, st7, st8, choose_folder, minutes_text, seconds_text, files_count, time_text, size_text, stop_text, start_text, message_stop, st9, st10, st11, st12
         index = self.comboBox_lang.currentText()
         d_lang = lang.get('Lang')
         sl = lang.get(index)
@@ -300,22 +290,24 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
         message_stop = sl.get('message_stop')
         start_text = sl.get('start')
         stop_text = sl.get('stop')
-        status1 = sl.get('status1')
-        status2 = sl.get('status2')
-        status3 = sl.get('status3')
-        status4 = sl.get('status4')
-        status5 = sl.get('status5')
+        st1 = sl.get('st1')
+        st2 = sl.get('st2')
+        st3 = sl.get('st3')
+        st4 = sl.get('st4')
+        st5 = sl.get('st5')
         choose_folder = sl.get('choose_folder')
-        status6 = sl.get('status6')
-        status7 = sl.get('status7')
-        status8 = sl.get('status8')
+        st6 = sl.get('st6')
+        st7 = sl.get('st7')
+        st8 = sl.get('st8')
         minutes_text = sl.get('minutes_text')
         seconds_text = sl.get('seconds_text')
         files_count = sl.get('files_count')
         time_text = sl.get('time_text')
         size_text = sl.get('size_text')
-        status9 = sl.get('status9')
-        status10 = sl.get('status10')
+        st9 = sl.get('st9')
+        st10 = sl.get('st10')
+        st11 = sl.get('st11')
+        st12 = sl.get('st12')
 
         lang_info = sl.get('info')
         if win_size == 0:
@@ -327,16 +319,16 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
         if index != d_lang.get('Cur_lang'):
             lang.update({'Lang': {'Cur_lang': index}})
 
-# добавление файлов по Enter
     def adds_string(self):
+        # добавление файлов по Enter
         a = self.lineEdit_extensions.text()
         if a.startswith('.'):
             self.adds()
         else:
             self.addfolders()
 
-# замена слешей для винды в строке пути главной папки
     def replace_path(self):
+        # замена слешей для винды в строке пути главной папки
         global path
         a = self.lineEdit_path.text()
         if path != a and a != '':
@@ -347,10 +339,13 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
                 path = b
             else:
                 self.lineEdit_path.setText(path)
-                self.statusBar.showMessage(status10, 3000)
+                self.statusBar.showMessage(st10, 3000)
+        elif a == '':
+            dict_all.update({'Global_path': {'path': a}})
+            path = a
 
-# замена слешей для винды в строке пути подпапок
     def replace_folders(self):
+        # замена слешей для винды в строке пути подпапок
         keys = self.cc()
         a = self.lineEdit_pathfolders.text()
         if keys.get('put') != a and a != '':
@@ -360,10 +355,18 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
                 keys.update({'put': b})
             else:
                 self.lineEdit_pathfolders.setText(keys.get('put'))
-                self.statusBar.showMessage(status10, 3000)
+                self.statusBar.showMessage(st10, 3000)
+        elif a == '':
+            keys.update({'put': ''})
 
-# отображение и скрытие окна инструкции
+    def clear_focus_path(self):
+        self.lineEdit_path.clearFocus()
+
+    def clear_focus_pathfolders(self):
+        self.lineEdit_pathfolders.clearFocus()
+
     def settings_win(self):
+        # отображение и скрытие окна инструкции
         global win_size
         if win_size == 0:
             self.setFixedSize(590, 430)
@@ -375,28 +378,28 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
             self.pushButton_settings.setText(f'{lang_info} >')
             win_size = 0
 
-# запись изменений в настройки (расширения/категории/пути/язык)
     def write_all(self):
+        # запись изменений в настройки (расширения/категории/пути/язык)
         with open('settings/dict_all.json', 'w', encoding="utf-8") as f:
             json.dump(dict_all, f, ensure_ascii=False)
 
         with open('settings/lang.json', 'w', encoding="utf-8") as f:
             json.dump(lang, f, ensure_ascii=False)
 
-# чтение инструкции с диска
     def info(self, readme_lang):
+        # чтение инструкции с диска
         with open(f'settings/readme_{readme_lang}.ini', 'r') as f:
             a = f.read()
             self.textBrowser.setText(a)
 
-# функция для текущей категории
     def cc(self):
+        # функция для текущей категории
         cur_category = self.listWidget_categori.currentItem().text()
         keys = dict_all.get(cur_category)
         return keys
 
-# отображение всех данный выбранной категории (путь/расширения)
     def currCat(self):
+        # отображение всех данный выбранной категории (путь/расширения)
         self.listWidget_extensions.clear()
         self.lineEdit_pathfolders.clear()
 
@@ -406,14 +409,14 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
         self.lineEdit_pathfolders.setText(keys.get('put'))
         self.listWidget_extensions.sortItems()
 
-# добавление категорий
     def addfolders(self):
+        # добавление категорий
         a = self.lineEdit_extensions.text()
         if a == '':
-            self.statusBar.showMessage(status1, 3500)
+            self.statusBar.showMessage(st1, 3500)
         else:
             if a in dict_all.keys():
-                self.statusBar.showMessage(f'"{a}" - {status9}', 3000)
+                self.statusBar.showMessage(f'"{a}" - {st9}', 3000)
             else:
                 self.listWidget_categori.addItem(a)
                 dict_all.update({a: {'put': '', 'rash': []}})
@@ -421,21 +424,22 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
                 self.listWidget_categori.setCurrentRow(b - 1)
         self.lineEdit_extensions.clear()
 
-# удаление категории
     def removefolders(self):
+        # удаление категории
         currItem = self.listWidget_categori.currentItem()
         if not currItem:
-            self.statusBar.showMessage(status2, 3000)
+            self.statusBar.showMessage(st2, 3000)
         else:
             del dict_all[currItem.text()]
             self.listWidget_categori.takeItem(self.listWidget_categori.row(currItem))
 
-# добавление расширений пачкой или по одному
+
     def adds(self):
+        # добавление расширений пачкой или по одному
         a = self.lineEdit_extensions.text().lower().split()
         list_ex = []
         if len(a) == 0:
-            self.statusBar.showMessage(status3, 3000)
+            self.statusBar.showMessage(st3, 3000)
         else:
             keys = self.cc()
             list_rash = keys.get('rash')
@@ -448,23 +452,23 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
                         self.listWidget_extensions.addItem(single_a)
         if len(list_ex) > 0:
             str1 = ' '.join(list_ex)
-            self.statusBar.showMessage(f'"{str1}" - {status4}', 3000)
+            self.statusBar.showMessage(f'"{str1}" - {st4}', 3000)
         self.listWidget_extensions.sortItems()
         self.lineEdit_extensions.clear()
 
-# удаление расширений
     def remove(self):
+        # удаление расширений
         currItem = self.listWidget_extensions.currentItem()
         if not currItem:
-            self.statusBar.showMessage(status5, 3000)
+            self.statusBar.showMessage(st5, 3000)
         else:
             keys = self.cc()
             list_rash = keys.get('rash')
             list_rash.remove(currItem.text())
             self.listWidget_extensions.takeItem(self.listWidget_extensions.row(currItem))
 
-# выбор пути для целевой папки
     def browse_folder(self):
+        # выбор пути для целевой папки
         global path
         if path == '' or path.isspace():
             path = QtWidgets.QFileDialog.getExistingDirectory(self, choose_folder, os.path.expanduser('~'))
@@ -474,10 +478,10 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
         self.lineEdit_path.setText(path)
         dict_all.update({'Global_path': {'path': path}})
 
-#  выбор путей для категорий
     def browse_path_category(self):
+        #  выбор путей для категорий
         if not self.listWidget_categori.currentItem():
-            self.statusBar.showMessage(status6, 3000)
+            self.statusBar.showMessage(st6, 3000)
         else:
             if self.lineEdit_pathfolders.text() == '' or self.lineEdit_pathfolders.text().isspace():
                 path_choose = QtWidgets.QFileDialog.getExistingDirectory(self, choose_folder, os.path.expanduser('~'))
@@ -488,12 +492,17 @@ class myApp(QtWidgets.QMainWindow, sort.Ui_MainWindow):
             self.lineEdit_pathfolders.setText(path_choose)
             keys.update({'put': path_choose})
 
-# запуск перемещения в отдельном процессе
     def start(self):
+        # запуск перемещения в отдельном процессе
         global breaking, starting
         if starting == False:
-            self.MyThread.start(5)
-            starting = True
+            if path == '':
+                self.statusBar.showMessage(st11, 3000)
+            elif not os.path.exists(path):
+                self.statusBar.showMessage(st12, 3000)
+            else:
+                self.MyThread.start(5)
+                starting = True
         elif starting == True:
             starting = False
             breaking = True
