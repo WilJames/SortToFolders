@@ -35,6 +35,6 @@ class Ui_finish(object):
     def retranslateUi(self, finish):
         _translate = QtCore.QCoreApplication.translate
         finish.setWindowTitle(_translate("finish", " "))
-        self.pushButton_2.setText(_translate("finish", "Ok"))
+        self.pushButton_2.setText(_translate("finish", "OK"))
 
 
