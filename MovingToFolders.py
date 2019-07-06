@@ -1,11 +1,10 @@
-from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtWidgets import QWidget, QMessageBox, QApplication
-from PyQt5.QtGui import QColor, QPalette, QIcon
+from PySide2 import QtWidgets, QtCore
+from PySide2.QtWidgets import QWidget, QMessageBox, QApplication
+from PySide2.QtGui import QColor, QPalette, QIcon
 from sys import argv, path
 from shutil import move
 import re
-from time import time, sleep
-import pathlib
+from time import time
 from lib import GUI, info, finish
 
 import os
@@ -42,10 +41,10 @@ class Info(QWidget, info.Ui_info):
 
 
 class MyThread(QtCore.QThread, QtCore.QObject):
-    info_not_files = QtCore.pyqtSignal()
-    buttons_stop_text = QtCore.pyqtSignal()
-    finished = QtCore.pyqtSignal(str)
-    progress = QtCore.pyqtSignal(float)
+    info_not_files = QtCore.Signal()
+    buttons_stop_text = QtCore.Signal()
+    finished = QtCore.Signal(str)
+    progress = QtCore.Signal(float)
 
     def __init__(self):
         super().__init__()
@@ -312,7 +311,7 @@ class myApp(QtWidgets.QMainWindow, GUI.Ui_MainWindow):
         self.pushButton_start.setText(sl[6])  # Переместить
         self.pushButton_settings.setText(f'{sl[7]}')  # Инструкция
 
-        with open(f'assets/readme_{index}.ini', 'r') as f:
+        with open(f'assets/readme_{index}.ini', 'r', encoding="utf-8") as f:
             a = f.read()
             self.Info.textBrowser.setText(a)
 
@@ -457,7 +456,7 @@ class myApp(QtWidgets.QMainWindow, GUI.Ui_MainWindow):
         # выбор пути для целевой папки
         global target_path
         if target_path == '' or target_path.isspace():
-            target_path = QtWidgets.QFileDialog.getExistingDirectory(self, choose_folder, os.path.expanduser('~'))
+            target_path = QtWidgets.QFileDialog.getExistingDirectory(self, sl[13], os.path.expanduser('~'))
         else:
             p = os.path.split(target_path)[0]
             target_path = QtWidgets.QFileDialog.getExistingDirectory(self, sl[13], os.path.expanduser(p))
@@ -487,7 +486,7 @@ class myApp(QtWidgets.QMainWindow, GUI.Ui_MainWindow):
             elif not os.path.exists(target_path):
                 self.statusBar.showMessage(sl[26], 3000)
             else:
-                self.MyThread.start(5)
+                self.MyThread.start(QtCore.QThread.HighestPriority)
                 starting = True
         elif starting == True:
             starting = False
