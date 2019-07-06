@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'finish.ui'
+# Form implementation generated from reading ui file 'finish.ui',
+# licensing of 'finish.ui' applies.
 #
-# Created by: PyQt5 UI code generator 5.12.1
+# Created: Sat Jul  6 16:02:34 2019
+#      by: pyside2-uic  running on PySide2 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PySide2 import QtCore, QtGui, QtWidgets
 
 
 class Ui_finish(object):
@@ -33,8 +35,5 @@ class Ui_finish(object):
         QtCore.QMetaObject.connectSlotsByName(finish)
 
     def retranslateUi(self, finish):
-        _translate = QtCore.QCoreApplication.translate
-        finish.setWindowTitle(_translate("finish", " "))
-        self.pushButton_2.setText(_translate("finish", "OK"))
-
-
+        finish.setWindowTitle(QtWidgets.QApplication.translate("finish", " ", None, -1))
+        self.pushButton_2.setText(QtWidgets.QApplication.translate("finish", "Ok", None, -1))
