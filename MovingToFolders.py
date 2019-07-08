@@ -1,14 +1,13 @@
-from PySide2 import QtWidgets, QtCore
-from PySide2.QtWidgets import QWidget, QMessageBox, QApplication
-from PySide2.QtGui import QColor, QPalette, QIcon
+from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtGui import QColor, QPalette, QIcon
 from sys import argv, path
 from shutil import move
 import re
 from time import time
 from lib import GUI, info, finish
 
-import os
 import json
+import os
 
 breaking = False
 starting = False
@@ -32,7 +31,7 @@ class Finish(QtWidgets.QDialog, finish.Ui_finish):
         self.accept()
 
 
-class Info(QWidget, info.Ui_info):
+class Info(QtWidgets.QWidget, info.Ui_info):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -41,10 +40,10 @@ class Info(QWidget, info.Ui_info):
 
 
 class MyThread(QtCore.QThread, QtCore.QObject):
-    info_not_files = QtCore.Signal()
-    buttons_stop_text = QtCore.Signal()
-    finished = QtCore.Signal(str)
-    progress = QtCore.Signal(float)
+    info_not_files = QtCore.pyqtSignal()
+    buttons_stop_text = QtCore.pyqtSignal()
+    finished = QtCore.pyqtSignal(str)
+    progress = QtCore.pyqtSignal(float)
 
     def __init__(self):
         super().__init__()
@@ -486,7 +485,7 @@ class myApp(QtWidgets.QMainWindow, GUI.Ui_MainWindow):
             elif not os.path.exists(target_path):
                 self.statusBar.showMessage(sl[26], 3000)
             else:
-                self.MyThread.start(QtCore.QThread.HighestPriority)
+                self.MyThread.start(5)
                 starting = True
         elif starting == True:
             starting = False
